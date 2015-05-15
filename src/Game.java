@@ -21,7 +21,7 @@ public class Game extends JApplet implements Runnable {
 	public Graphics2D g2d;
 	int xSize = 854, ySize = 480;
 	public PlayerShip player;//= new PlayerShip();
-	//public HeadsUpDisplay hud;//= new HeadsUpDisplay(xSize, ySize, player);
+	public HeadsUpDisplay hud;//= new HeadsUpDisplay(xSize, ySize, player);
 		
 	public void init() {
 		setSize(xSize,ySize);
@@ -36,22 +36,10 @@ public class Game extends JApplet implements Runnable {
 	@Override
 	public void run() {
 		player = new PlayerShip();
+		hud = new HeadsUpDisplay(xSize, ySize, player);
+		getContentPane().add(hud);
 		getContentPane().add(player);
-		add(player);
-		//hud = new HeadsUpDisplay(xSize, ySize, player);
-		//getContentPane().add(hud);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
 		getContentPane().revalidate();
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
-		System.out.println(player);
 		while(true) {
 			player.moveTick();
 			repaint();

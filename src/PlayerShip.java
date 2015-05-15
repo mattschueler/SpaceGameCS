@@ -10,6 +10,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -21,6 +23,9 @@ public class PlayerShip extends JComponent {
 	private double xVel,yVel,rVel;
 	private double xPos,yPos,rot;
 	private double accel;
+	
+	public ConcurrentHashMap<String,Boolean> keyBinds;
+	
 	public final double MAX_VEL = 100;
 	
 	public PlayerShip() {
@@ -28,37 +33,53 @@ public class PlayerShip extends JComponent {
 		yPos=300;
 		accel = 0.25;
 		try {
-			img = ImageIO.read(new File("spaceshipsmall.jpg"));
+			img = ImageIO.read(new File("spaceshipsmall.jpeg"));
 		    imgX = img.getWidth();
 		    imgY = img.getHeight();
 		} catch (IOException e) {
 			e.printStackTrace();
+			return;
 		}
-		getInputMap().put(KeyStroke.getKeyStroke("pressed W"), "thrust");
-		getActionMap().put("thrust", new Thrust());
-		getInputMap().put(KeyStroke.getKeyStroke("pressed S"), "brake");
-		getActionMap().put("brake", new Brake());
-		getInputMap().put(KeyStroke.getKeyStroke("pressed A"), "rotate");
-		getActionMap().put("rotate", new Rotate());
-		getInputMap().put(KeyStroke.getKeyStroke("pressed D"), "rotate");
-		getActionMap().put("rotate", new Rotate());
-		getInputMap().put(KeyStroke.getKeyStroke("released A"), "stoprotate");
-		getActionMap().put("stoprotate", new StopRotate());
-		getInputMap().put(KeyStroke.getKeyStroke("released D"), "stoprotate");
-		getActionMap().put("stoprotate", new StopRotate());
+		keyBinds = new ConcurrentHashMap<String,Boolean>() {{
+			put("W", false);
+			put("S", false);
+			put("A", false);
+			put("D", false);			
+		}};
+		for(String s : keyBinds.keySet()) {
+			InputMap inMap = getInputMap();
+			ActionMap acMap = getActionMap();
+			inMap.put(KeyStroke.getKeyStroke("pressed " + s), "press " + s);
+			acMap.put("press " + s, new PressAction(s));
+			inMap.put(KeyStroke.getKeyStroke("released " + s), "release " + s);
+			acMap.put("release " + s, new ReleaseAction(s));
+		}
 	}
 	
-	public void addActions(String keyStroke, AbstractAction newAction) {
-		InputMap inMap = getInputMap();
-		ActionMap acMap = getActionMap();
-		getInputMap().put(KeyStroke.getKeyStroke("pressed W"), "thrust");
-		getActionMap().put("thrust", new Thrust());
-
-		//http://stackoverflow.com/questions/16328946/java-keylistener-stutters
+	class PressAction extends AbstractAction {
+		private String key;
+		public PressAction(String newKey) {
+			key=newKey;
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			keyBinds.replace(key,true);
+			System.out.println("" + e + true);
+		}
 	}
 	
-	//class 
-	
+	class ReleaseAction extends AbstractAction {
+		private String key;
+		public ReleaseAction(String newKey) {
+			key=newKey;
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			keyBinds.replace(key,false);
+			System.out.println("" + e + false);
+		}
+	}
+			
 	public double[] getPosition() {
 		double[] shipCoordinates = {xPos,yPos};
 		return shipCoordinates;
@@ -72,53 +93,45 @@ public class PlayerShip extends JComponent {
 	public double getRotation() {
 		return rot;
 	}
-	
-	class Thrust extends AbstractAction {
-		@Override
-		public void actionPerformed(ActionEvent e) {
+				
+	public void moveTick() {
+		//make any adjustments to velocity vectors
+		//thrusting/braking
+		if(keyBinds.get("W")) {
+			//thrust
 			xVel+=(accel*Math.cos(rot));
 			yVel+=(accel*Math.sin(rot));
-		}		
-	}
-	
-	class Brake extends AbstractAction{
-		@Override
-		public void actionPerformed(ActionEvent e) {
+		} else if (keyBinds.get("S")) {
+			//brake
 			if(xVel!=0)xVel-=Math.copySign(1.25*accel, xVel)*Math.cos(Math.atan(Math.abs(yVel/xVel)));
 			if(yVel!=0)yVel-=Math.copySign(1.25*accel, yVel)*Math.sin(Math.atan(Math.abs(yVel/xVel)));
+		} else {
+			//for any cases where not thrusting/braking at all
 		}
-	}
-	
-	class Rotate extends AbstractAction{
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if(e.getActionCommand().equals("a")) {
-				rVel=-0.1;
-			} else if(e.getActionCommand().equals("d")){
-				rVel=0.1;
-			}
-		}
-	}
-	
-	class StopRotate extends AbstractAction{
-		@Override
-		public void actionPerformed(ActionEvent e) {
+		//turning
+		if(keyBinds.get("A")) {
+			//rotate left
+			rVel=-0.1;
+		} else if (keyBinds.get("D")) {
+			//rotate right
+			rVel=0.1;
+		} else {
+			//no rotation
 			rVel=0;
 		}
-	}
-		
-	public void moveTick() {
+		//finally make adjustments to position and angle
 		xPos+=xVel;
 		yPos+=yVel;
 		rot+=rVel;
 		if(Math.abs(xVel)<=0.2)xVel=0;
 		if(Math.abs(yVel)<=0.2)yVel=0;
-		double maxVX = -1 * MAX_VEL * Math.cos(rot);
-		double maxVY = -1 * MAX_VEL * Math.sin(rot);
-		System.out.println("MAXX: " + maxVX + " MAXY: " + maxVY);
+		double vTheta = Math.atan(yVel/xVel);
+		double maxVX = -1 * MAX_VEL * Math.cos(vTheta);
+		double maxVY = -1 * MAX_VEL * Math.sin(vTheta);
+		//System.out.println("MAXX: " + maxVX + " MAXY: " + maxVY);
 		if(Math.abs(xVel)>Math.abs(maxVX))xVel=Math.copySign(maxVX, xVel);
 		if(Math.abs(yVel)>Math.abs(maxVY))yVel=Math.copySign(maxVY, yVel);
-		System.out.println("VX: " + xVel + " VY: " + yVel + " THETA: " + rot);
+		//System.out.println("VX: " + xVel + " VY: " + yVel + " THETA: " + rot);
 	}
 	
 	public void isOffscreen(int screenX, int screenY) {
