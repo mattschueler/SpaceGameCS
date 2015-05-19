@@ -12,6 +12,7 @@ import java.io.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.JApplet;
+import javax.swing.SwingWorker;
 
 public class Game extends JApplet implements Runnable {
 
@@ -22,6 +23,7 @@ public class Game extends JApplet implements Runnable {
 	int xSize = 854, ySize = 480;
 	public PlayerShip player;//= new PlayerShip();
 	public HeadsUpDisplay hud;//= new HeadsUpDisplay(xSize, ySize, player);
+	private Thread th;
 		
 	public void init() {
 		setSize(xSize,ySize);
@@ -29,27 +31,17 @@ public class Game extends JApplet implements Runnable {
 		g2d = (Graphics2D)(offScreen.getGraphics());
 		player = new PlayerShip();
 		//hud = new HeadsUpDisplay(xSize, ySize, player);
-		Thread th = new Thread(this);
+		th = new Thread(this);
 		th.start();
 	}
 	
 	@Override
 	public void run() {
-		player = new PlayerShip();
-		hud = new HeadsUpDisplay(xSize, ySize, player);
-		getContentPane().add(hud);
-		getContentPane().add(player);
-		getContentPane().revalidate();
-		while(true) {
-			player.moveTick();
-			repaint();
-			player.isOffscreen(xSize, ySize);
-			try {
-				Thread.sleep(20);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+		(new GameWorker()).execute();
+	}
+	
+	public void stop() {
+		th = null;
 	}
 	
 	public void paint(Graphics g) {
@@ -59,6 +51,33 @@ public class Game extends JApplet implements Runnable {
 	
 	public void update(Graphics g) {
 		paint(g);
+	}
+	
+	class GameWorker extends SwingWorker<Object, Object> {
+
+		@Override
+		protected Object doInBackground() throws Exception {
+			player = new PlayerShip();
+			hud = new HeadsUpDisplay(xSize, ySize, player);
+			getContentPane().add(hud);
+			getContentPane().add(player);
+			getContentPane().revalidate();
+			getContentPane().requestFocus();
+			getContentPane().setVisible(true);
+			while(true) {
+				player.moveTick();
+				repaint();
+				player.isOffscreen(xSize, ySize);
+				try {
+					Thread.sleep(20);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		
+		
 	}
 	
 }

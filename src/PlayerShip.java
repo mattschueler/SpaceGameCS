@@ -47,7 +47,7 @@ public class PlayerShip extends JComponent {
 			put("D", false);			
 		}};
 		for(String s : keyBinds.keySet()) {
-			InputMap inMap = getInputMap();
+			InputMap inMap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 			ActionMap acMap = getActionMap();
 			inMap.put(KeyStroke.getKeyStroke("pressed " + s), "press " + s);
 			acMap.put("press " + s, new PressAction(s));
