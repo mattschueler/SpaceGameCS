@@ -22,7 +22,7 @@ public class Game extends JApplet implements Runnable {
 	public Graphics2D g2d;
 	int xSize = 854, ySize = 480;
 	public PlayerShip player;//= new PlayerShip();
-	public HeadsUpDisplay hud;//= new HeadsUpDisplay(xSize, ySize, player);
+	//public HeadsUpDisplay hud;//= new HeadsUpDisplay(xSize, ySize, player);
 	private Thread th;
 		
 	public void init() {
@@ -58,8 +58,8 @@ public class Game extends JApplet implements Runnable {
 		@Override
 		protected Object doInBackground() throws Exception {
 			player = new PlayerShip();
-			hud = new HeadsUpDisplay(xSize, ySize, player);
-			getContentPane().add(hud);
+			//hud = new HeadsUpDisplay(xSize, ySize, player);
+			//getContentPane().add(hud);
 			getContentPane().add(player);
 			getContentPane().revalidate();
 			getContentPane().requestFocus();

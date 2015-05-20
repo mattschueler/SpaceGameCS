@@ -64,7 +64,6 @@ public class PlayerShip extends JComponent {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			keyBinds.replace(key,true);
-			System.out.println("" + e + true);
 		}
 	}
 	
@@ -76,7 +75,6 @@ public class PlayerShip extends JComponent {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			keyBinds.replace(key,false);
-			System.out.println("" + e + false);
 		}
 	}
 			
@@ -128,10 +126,10 @@ public class PlayerShip extends JComponent {
 		double vTheta = Math.atan(yVel/xVel);
 		double maxVX = -1 * MAX_VEL * Math.cos(vTheta);
 		double maxVY = -1 * MAX_VEL * Math.sin(vTheta);
-		//System.out.println("MAXX: " + maxVX + " MAXY: " + maxVY);
+		System.out.println("MAXX: " + maxVX + " MAXY: " + maxVY);
 		if(Math.abs(xVel)>Math.abs(maxVX))xVel=Math.copySign(maxVX, xVel);
 		if(Math.abs(yVel)>Math.abs(maxVY))yVel=Math.copySign(maxVY, yVel);
-		//System.out.println("VX: " + xVel + " VY: " + yVel + " THETA: " + rot);
+		System.out.println("VX: " + xVel + " VY: " + yVel + " THETA: " + rot);
 	}
 	
 	public void isOffscreen(int screenX, int screenY) {
