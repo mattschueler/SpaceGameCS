@@ -1,6 +1,6 @@
 /**
  * @author Matthew Schueler
- * @version 4.0
+ * @version 5.0
  */
 
 import java.awt.Graphics;
@@ -10,12 +10,10 @@ import javax.swing.JComponent;
 
 public class HeadsUpDisplay extends JComponent {
 	
-	private int xSize, ySize;
+	private static final long serialVersionUID = 1L;
 	private PlayerShip playerShip;
 	
-	public HeadsUpDisplay(int xPixels, int yPixels, PlayerShip player) {
-		xSize = xPixels;
-		ySize = yPixels;
+	public HeadsUpDisplay(PlayerShip player) {
 		playerShip = player;
 	}
 	

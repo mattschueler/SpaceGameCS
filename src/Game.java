@@ -1,16 +1,13 @@
 /**
  * @author Matthew Schueler
- * @version 4.0
+ * @version 5.0
  */
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.*;
 
-import javax.imageio.ImageIO;
 import javax.swing.JApplet;
 import javax.swing.SwingWorker;
 
@@ -21,8 +18,8 @@ public class Game extends JApplet implements Runnable {
 	public Image offScreen;
 	public Graphics2D g2d;
 	int xSize = 854, ySize = 480;
-	public PlayerShip player;//= new PlayerShip();
-	//public HeadsUpDisplay hud;//= new HeadsUpDisplay(xSize, ySize, player);
+	public PlayerShip player;
+	//public HeadsUpDisplay hud;
 	private Thread th;
 		
 	public void init() {
@@ -30,7 +27,7 @@ public class Game extends JApplet implements Runnable {
 		offScreen = createImage(xSize,ySize);
 		g2d = (Graphics2D)(offScreen.getGraphics());
 		player = new PlayerShip();
-		//hud = new HeadsUpDisplay(xSize, ySize, player);
+		//hud = new HeadsUpDisplay(player);
 		th = new Thread(this);
 		th.start();
 	}
@@ -54,16 +51,12 @@ public class Game extends JApplet implements Runnable {
 	}
 	
 	class GameWorker extends SwingWorker<Object, Object> {
-
 		@Override
 		protected Object doInBackground() throws Exception {
-			player = new PlayerShip();
-			//hud = new HeadsUpDisplay(xSize, ySize, player);
 			//getContentPane().add(hud);
 			getContentPane().add(player);
 			getContentPane().revalidate();
 			getContentPane().requestFocus();
-			getContentPane().setVisible(true);
 			while(true) {
 				player.moveTick();
 				repaint();
@@ -74,10 +67,6 @@ public class Game extends JApplet implements Runnable {
 					e.printStackTrace();
 				}
 			}
-		}
-		
-		
-		
-	}
-	
+		}		
+	}	
 }

@@ -1,6 +1,6 @@
 /**
  * @author Matthew Schueler
- * @version 4.0
+ * @version 5.0
  */
 
 import java.awt.Graphics;
@@ -10,7 +10,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.imageio.ImageIO;
@@ -18,6 +17,7 @@ import javax.swing.*;
 
 public class PlayerShip extends JComponent {
 
+	private static final long serialVersionUID = 1L;
 	BufferedImage img;
 	public int imgX, imgY;
 	private double xVel,yVel,rVel;
@@ -26,7 +26,8 @@ public class PlayerShip extends JComponent {
 	
 	public ConcurrentHashMap<String,Boolean> keyBinds;
 	
-	public final double MAX_VEL = 100;
+	final double MAX_VEL = 100;
+	final double MIN_VEL = 0.2;
 	
 	public PlayerShip() {
 		xPos=300;
@@ -40,12 +41,15 @@ public class PlayerShip extends JComponent {
 			e.printStackTrace();
 			return;
 		}
-		keyBinds = new ConcurrentHashMap<String,Boolean>() {{
-			put("W", false);
-			put("S", false);
-			put("A", false);
-			put("D", false);			
-		}};
+		keyBinds = new ConcurrentHashMap<String,Boolean>() {
+			private static final long serialVersionUID = 1L;
+			{
+				put("W", false);
+				put("S", false);
+				put("A", false);
+				put("D", false);			
+			}
+		};
 		for(String s : keyBinds.keySet()) {
 			InputMap inMap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 			ActionMap acMap = getActionMap();
@@ -57,6 +61,8 @@ public class PlayerShip extends JComponent {
 	}
 	
 	class PressAction extends AbstractAction {
+		//general key press action class
+		private static final long serialVersionUID = 1L;
 		private String key;
 		public PressAction(String newKey) {
 			key=newKey;
@@ -68,6 +74,8 @@ public class PlayerShip extends JComponent {
 	}
 	
 	class ReleaseAction extends AbstractAction {
+		//general key release action class
+		private static final long serialVersionUID = 1L;
 		private String key;
 		public ReleaseAction(String newKey) {
 			key=newKey;
@@ -95,10 +103,12 @@ public class PlayerShip extends JComponent {
 	public void moveTick() {
 		//make any adjustments to velocity vectors
 		//thrusting/braking
+		double xAccel = accel*Math.cos(rot);
+		double yAccel = accel*Math.sin(rot);
 		if(keyBinds.get("W")) {
 			//thrust
-			xVel+=(accel*Math.cos(rot));
-			yVel+=(accel*Math.sin(rot));
+			xVel+=xAccel;
+			yVel+=yAccel;
 		} else if (keyBinds.get("S")) {
 			//brake
 			if(xVel!=0)xVel-=Math.copySign(1.25*accel, xVel)*Math.cos(Math.atan(Math.abs(yVel/xVel)));
@@ -107,29 +117,21 @@ public class PlayerShip extends JComponent {
 			//for any cases where not thrusting/braking at all
 		}
 		//turning
-		if(keyBinds.get("A")) {
-			//rotate left
-			rVel=-0.1;
-		} else if (keyBinds.get("D")) {
-			//rotate right
-			rVel=0.1;
-		} else {
-			//no rotation
-			rVel=0;
-		}
+		if (keyBinds.get("A")) rVel=-0.1; //rotate left
+		else if (keyBinds.get("D")) rVel=0.1; //rotate right
+		else rVel=0; //no rotation
 		//finally make adjustments to position and angle
 		xPos+=xVel;
 		yPos+=yVel;
 		rot+=rVel;
-		if(Math.abs(xVel)<=0.2)xVel=0;
-		if(Math.abs(yVel)<=0.2)yVel=0;
+		if(Math.abs(xVel)<=MIN_VEL && Math.abs(xAccel)<0.001)xVel=0;
+		if(Math.abs(yVel)<=MIN_VEL && Math.abs(yAccel)<0.001)yVel=0;
 		double vTheta = Math.atan(yVel/xVel);
 		double maxVX = -1 * MAX_VEL * Math.cos(vTheta);
 		double maxVY = -1 * MAX_VEL * Math.sin(vTheta);
-		System.out.println("MAXX: " + maxVX + " MAXY: " + maxVY);
 		if(Math.abs(xVel)>Math.abs(maxVX))xVel=Math.copySign(maxVX, xVel);
 		if(Math.abs(yVel)>Math.abs(maxVY))yVel=Math.copySign(maxVY, yVel);
-		System.out.println("VX: " + xVel + " VY: " + yVel + " THETA: " + rot);
+		//System.out.println("VX: " + xVel + " VY: " + yVel + " THETA: " + rot);
 	}
 	
 	public void isOffscreen(int screenX, int screenY) {
