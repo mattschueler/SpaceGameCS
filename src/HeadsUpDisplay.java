@@ -5,25 +5,38 @@
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
 public class HeadsUpDisplay extends JComponent {
 	
 	private static final long serialVersionUID = 1L;
 	private PlayerShip playerShip;
+	private BufferedImage life;
+	public int lifeImgX, lifeImgY;
 	
 	public HeadsUpDisplay(PlayerShip player) {
 		playerShip = player;
+		try {
+			life = ImageIO.read(new File("spaceshiptiny.jpeg"));
+		    lifeImgX = life.getWidth();
+		    lifeImgY = life.getHeight();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
 	}
 	
 	public void paint (Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
-		g2d.drawString(String.format("Xpos: %5.2f", playerShip.getPosition()[0]), 10, 10);
-		g2d.drawString(String.format("Ypos: %5.2f", playerShip.getPosition()[1]), 90, 10);
-		g2d.drawString(String.format("Xvel: %5.2f", playerShip.getVelocity()[0]), 10, 30);
-		g2d.drawString(String.format("Yvel: %5.2f", playerShip.getVelocity()[1]), 90, 30);
-		g2d.drawString(String.format("Angle(rad): %5.2f", playerShip.getRotation()), 10, 50);
+		for (int i=0;i<playerShip.getLives();i++) {
+			g2d.drawImage(life, 10+20*i, 20, lifeImgX, lifeImgY, null);
+		}
 	}
 	
 }

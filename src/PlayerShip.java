@@ -24,15 +24,18 @@ public class PlayerShip extends JComponent {
 	private double xPos,yPos,rot;
 	private double accel;
 	
+	private int lives;
+	
 	public ConcurrentHashMap<String,Boolean> keyBinds;
 	
 	final double MAX_VEL = 100;
 	final double MIN_VEL = 0.2;
 	
 	public PlayerShip() {
-		xPos=300;
-		yPos=300;
+		xPos = 300;
+		yPos = 300;
 		accel = 0.25;
+		lives = 3;
 		try {
 			img = ImageIO.read(new File("spaceshipsmall.jpeg"));
 		    imgX = img.getWidth();
@@ -47,7 +50,8 @@ public class PlayerShip extends JComponent {
 				put("W", false);
 				put("S", false);
 				put("A", false);
-				put("D", false);			
+				put("D", false);
+				put("SPACE", false);
 			}
 		};
 		for(String s : keyBinds.keySet()) {
@@ -99,6 +103,10 @@ public class PlayerShip extends JComponent {
 	public double getRotation() {
 		return rot;
 	}
+	
+	public int getLives() {
+		return lives;
+	}
 				
 	public void moveTick() {
 		//make any adjustments to velocity vectors
@@ -120,18 +128,19 @@ public class PlayerShip extends JComponent {
 		if (keyBinds.get("A")) rVel=-0.1; //rotate left
 		else if (keyBinds.get("D")) rVel=0.1; //rotate right
 		else rVel=0; //no rotation
+		
 		//finally make adjustments to position and angle
 		xPos+=xVel;
 		yPos+=yVel;
 		rot+=rVel;
-		if(Math.abs(xVel)<=MIN_VEL && Math.abs(xAccel)<0.001)xVel=0;
-		if(Math.abs(yVel)<=MIN_VEL && Math.abs(yAccel)<0.001)yVel=0;
+		if(Math.abs(xVel)<=MIN_VEL && !keyBinds.get("W"))xVel=0;
+		if(Math.abs(yVel)<=MIN_VEL && !keyBinds.get("W"))yVel=0;
 		double vTheta = Math.atan(yVel/xVel);
 		double maxVX = -1 * MAX_VEL * Math.cos(vTheta);
 		double maxVY = -1 * MAX_VEL * Math.sin(vTheta);
 		if(Math.abs(xVel)>Math.abs(maxVX))xVel=Math.copySign(maxVX, xVel);
 		if(Math.abs(yVel)>Math.abs(maxVY))yVel=Math.copySign(maxVY, yVel);
-		//System.out.println("VX: " + xVel + " VY: " + yVel + " THETA: " + rot);
+		System.out.println(String.format("VX: %.4f VY: %.4f TH: %.4f AX: %.4f AY: %.4f",xVel, yVel, rot, xAccel, yAccel));
 	}
 	
 	public void isOffscreen(int screenX, int screenY) {

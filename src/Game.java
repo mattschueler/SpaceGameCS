@@ -3,6 +3,7 @@
  * @version 5.0
  */
 
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -19,7 +20,7 @@ public class Game extends JApplet implements Runnable {
 	public Graphics2D g2d;
 	int xSize = 854, ySize = 480;
 	public PlayerShip player;
-	//public HeadsUpDisplay hud;
+	public HeadsUpDisplay hud;
 	private Thread th;
 		
 	public void init() {
@@ -27,7 +28,7 @@ public class Game extends JApplet implements Runnable {
 		offScreen = createImage(xSize,ySize);
 		g2d = (Graphics2D)(offScreen.getGraphics());
 		player = new PlayerShip();
-		//hud = new HeadsUpDisplay(player);
+		hud = new HeadsUpDisplay(player);
 		th = new Thread(this);
 		th.start();
 	}
@@ -42,8 +43,11 @@ public class Game extends JApplet implements Runnable {
 	}
 	
 	public void paint(Graphics g) {
-		g2d.clearRect(0,0,854,480);
-		getContentPane().paint(g);
+		//g2d.clearRect(0,0,854,480);
+		super.paint(g);
+		for (Component c : getContentPane().getComponents()) {
+			c.paint(g);
+		}
 	}
 	
 	public void update(Graphics g) {
@@ -53,13 +57,13 @@ public class Game extends JApplet implements Runnable {
 	class GameWorker extends SwingWorker<Object, Object> {
 		@Override
 		protected Object doInBackground() throws Exception {
-			//getContentPane().add(hud);
-			getContentPane().add(player);
+			getContentPane().add(hud,0);
+			getContentPane().add(player,1);
 			getContentPane().revalidate();
 			getContentPane().requestFocus();
 			while(true) {
 				player.moveTick();
-				repaint();
+				/*getContentPane().*/repaint();
 				player.isOffscreen(xSize, ySize);
 				try {
 					Thread.sleep(20);
