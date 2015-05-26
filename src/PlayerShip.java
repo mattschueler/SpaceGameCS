@@ -15,20 +15,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-public class PlayerShip extends JComponent {
+public class PlayerShip extends GameComponent {
 
 	private static final long serialVersionUID = 1L;
 	BufferedImage img;
 	public int imgX, imgY;
 	private double xVel,yVel,rVel;
-	private double xPos,yPos,rot;
+	private int xPos,yPos;
+	private double rot;
 	private double accel;
 	
 	private int lives;
 	
 	public ConcurrentHashMap<String,Boolean> keyBinds;
 	
-	final double MAX_VEL = 100;
+	final double MAX_VEL = 75;
 	final double MIN_VEL = 0.2;
 	
 	public PlayerShip() {
@@ -61,6 +62,11 @@ public class PlayerShip extends JComponent {
 			acMap.put("press " + s, new PressAction(s));
 			inMap.put(KeyStroke.getKeyStroke("released " + s), "release " + s);
 			acMap.put("release " + s, new ReleaseAction(s));
+			//if (s.equals("SPACE")) {
+				System.out.println(s);
+				inMap.put(KeyStroke.getKeyStroke("typed " + s), "type " + s);
+				acMap.put("typed " + s, new TypeAction(s));
+			//}
 		}
 	}
 	
@@ -74,6 +80,21 @@ public class PlayerShip extends JComponent {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			keyBinds.replace(key,true);
+		}
+	}
+	
+	class TypeAction extends AbstractAction {
+		//used for the fire button
+		private static final long serialVersionUID = 1L;
+		private String key;
+		public TypeAction(String newKey) {
+			System.out.println("init");
+			key=newKey;
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			System.out.println(e);
+			keyBinds.replace(key,false);
 		}
 	}
 	
@@ -111,12 +132,10 @@ public class PlayerShip extends JComponent {
 	public void moveTick() {
 		//make any adjustments to velocity vectors
 		//thrusting/braking
-		double xAccel = accel*Math.cos(rot);
-		double yAccel = accel*Math.sin(rot);
 		if(keyBinds.get("W")) {
 			//thrust
-			xVel+=xAccel;
-			yVel+=yAccel;
+			xVel+=accel*Math.cos(rot);
+			yVel+=accel*Math.sin(rot);
 		} else if (keyBinds.get("S")) {
 			//brake
 			if(xVel!=0)xVel-=Math.copySign(1.25*accel, xVel)*Math.cos(Math.atan(Math.abs(yVel/xVel)));
@@ -128,22 +147,29 @@ public class PlayerShip extends JComponent {
 		if (keyBinds.get("A")) rVel=-0.1; //rotate left
 		else if (keyBinds.get("D")) rVel=0.1; //rotate right
 		else rVel=0; //no rotation
-		
+		//fire bullets
+		if (keyBinds.get("SPACE")) {
+			getParent().add(new Bullet(xPos+imgX/2, yPos+imgY/2, rot, xVel, yVel));
+		}
 		//finally make adjustments to position and angle
 		xPos+=xVel;
 		yPos+=yVel;
 		rot+=rVel;
+		//If not trying to accelerate and speed less than minimum, set to 0
 		if(Math.abs(xVel)<=MIN_VEL && !keyBinds.get("W"))xVel=0;
 		if(Math.abs(yVel)<=MIN_VEL && !keyBinds.get("W"))yVel=0;
+		//find what max speed is for each direction based off angle of velocity
 		double vTheta = Math.atan(yVel/xVel);
 		double maxVX = -1 * MAX_VEL * Math.cos(vTheta);
 		double maxVY = -1 * MAX_VEL * Math.sin(vTheta);
+		//Make sure that total velocity (looking at both components does not exceed max speed
 		if(Math.abs(xVel)>Math.abs(maxVX))xVel=Math.copySign(maxVX, xVel);
 		if(Math.abs(yVel)>Math.abs(maxVY))yVel=Math.copySign(maxVY, yVel);
-		System.out.println(String.format("VX: %.4f VY: %.4f TH: %.4f AX: %.4f AY: %.4f",xVel, yVel, rot, xAccel, yAccel));
+		isOffscreen(Game.xSize, Game.ySize);
 	}
 	
 	public void isOffscreen(int screenX, int screenY) {
+		//check if off edge of any side of screen and move to wrap around to other side
 		if ((xPos+imgX/2)<=0)xPos+=screenX;
 		else if ((xPos-imgX/2)>=screenX)xPos=0;
 		if ((yPos+imgY/2)<=0)yPos+=screenY;
@@ -152,6 +178,7 @@ public class PlayerShip extends JComponent {
 	
 	public void paint(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
+		//rotate the image based on theta of ship, and translate to center position of image
 		AffineTransform at = AffineTransform.getRotateInstance(rot+(Math.PI/2), xPos+img.getWidth()/2, yPos+img.getHeight()/2);
 		at.translate(xPos,yPos);
 		g2d.drawImage(img, at, null);

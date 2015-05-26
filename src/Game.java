@@ -18,10 +18,12 @@ public class Game extends JApplet implements Runnable {
 	BufferedImage img = null;
 	public Image offScreen;
 	public Graphics2D g2d;
-	int xSize = 854, ySize = 480;
 	public PlayerShip player;
 	public HeadsUpDisplay hud;
 	private Thread th;
+	
+	public final static int TICK_TIME = 20;
+	public final static int xSize = 854, ySize = 480;
 		
 	public void init() {
 		setSize(xSize,ySize);
@@ -36,6 +38,7 @@ public class Game extends JApplet implements Runnable {
 	@Override
 	public void run() {
 		(new GameWorker()).execute();
+		
 	}
 	
 	public void stop() {
@@ -62,11 +65,14 @@ public class Game extends JApplet implements Runnable {
 			getContentPane().revalidate();
 			getContentPane().requestFocus();
 			while(true) {
-				player.moveTick();
-				/*getContentPane().*/repaint();
-				player.isOffscreen(xSize, ySize);
+				for (Component c : getContentPane().getComponents()) {
+					if (c instanceof GameComponent)
+						((GameComponent)c).moveTick();
+				}
+				repaint();				
+				revalidate();
 				try {
-					Thread.sleep(20);
+					Thread.sleep(TICK_TIME);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
