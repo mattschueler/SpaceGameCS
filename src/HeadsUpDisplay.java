@@ -34,9 +34,10 @@ public class HeadsUpDisplay extends JComponent {
 	
 	public void paint (Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
-		for (int i=0;i<playerShip.getLives();i++) {
+		/*for (int i=0;i<playerShip.getLives();i++) {
 			g2d.drawImage(life, 10+20*i, 20, lifeImgX, lifeImgY, null);
-		}
+		}*/
+		g2d.drawString(""+playerShip.getLives(), 10, 20);
 	}
 	
 }

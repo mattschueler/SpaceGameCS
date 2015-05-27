@@ -3,6 +3,7 @@
  * @version 5.0
  */
 
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -29,7 +30,7 @@ public class PlayerShip extends GameComponent {
 	
 	public ConcurrentHashMap<String,Boolean> keyBinds;
 	
-	final double MAX_VEL = 75;
+	final double MAX_VEL = 10;
 	final double MIN_VEL = 0.2;
 	
 	public PlayerShip() {
@@ -149,7 +150,12 @@ public class PlayerShip extends GameComponent {
 		else rVel=0; //no rotation
 		//fire bullets
 		if (keyBinds.get("SPACE")) {
-			getParent().add(new Bullet(xPos+imgX/2, yPos+imgY/2, rot, xVel, yVel));
+			Component[] comps = getParent().getComponents();
+			boolean fired = false;
+			for(int i=0;i<comps.length;i++) {
+				if(comps[i] instanceof Bullet)fired=true;
+			}
+			if(!fired)getParent().add(new Bullet(xPos+imgX/2, yPos+imgY/2, rot, xVel, yVel));
 		}
 		//finally make adjustments to position and angle
 		xPos+=xVel;
