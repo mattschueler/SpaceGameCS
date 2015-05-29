@@ -1,25 +1,38 @@
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
+/**
+ * @author Matthew Schueler
+ * @version 6.0
+ */
 
-import javax.swing.JComponent;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 
 public class Bullet extends GameComponent {
 	private static final long serialVersionUID = 1L;
+	/*BufferedImage img;
+	public int imgX, imgY;
 	private double xVel,yVel;
 	private int xPos,yPos;
-	private double rot;
+	private double rot;*/
 	
 	private int lifeTime;
-	
+		
 	public Bullet(int px, int py, double th, double vx, double vy) {
 		xPos = px;
 		yPos = py;
 		rot = th;
-		xVel = vx + 25 * Math.cos(rot);
-		yVel = vy + 25 * Math.sin(rot);
-		lifeTime = 1000; //in msecs
+		xVel = vx + 20 * Math.cos(rot);
+		yVel = vy + 20 * Math.sin(rot);
+		lifeTime = 500; //in msecs
+		try {
+			img = ImageIO.read(new File("bullet.png"));
+	    	imgX = img.getWidth();
+	    	imgY = img.getHeight();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
 	}
 	
 	public void moveTick() {
@@ -30,10 +43,10 @@ public class Bullet extends GameComponent {
 		}
 		xPos+=xVel;
 		yPos+=yVel;
-		isOffscreen(Game.xSize,Game.ySize);
+		isOffscreen(Game.X_SIZE,Game.Y_SIZE);
 	}
 	
-	public void isOffscreen(int screenX, int screenY) {
+	/*public void isOffscreen(int screenX, int screenY) {
 		//check if off edge of any side of screen and move to wrap around to other side
 		if ((xPos+5)<=0)xPos+=screenX;
 		else if ((xPos-5)>=screenX)xPos=0;
@@ -43,7 +56,9 @@ public class Bullet extends GameComponent {
 	
 	public void paint(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
-		g2d.fillOval(xPos-5, yPos-5, 10, 10);
-	}
+		setBackground(Color.YELLOW);
+		setOpaque(true);
+		g2d.fillOval(xPos-RADIUS, yPos-RADIUS, 2*RADIUS, 2*RADIUS);
+	}*/
 	
 }

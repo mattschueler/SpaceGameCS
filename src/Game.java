@@ -1,6 +1,6 @@
 /**
  * @author Matthew Schueler
- * @version 5.0
+ * @version 6.0
  */
 
 import java.awt.Component;
@@ -23,11 +23,11 @@ public class Game extends JApplet implements Runnable {
 	private Thread th;
 	
 	public final static int TICK_TIME = 20;
-	public final static int xSize = 854, ySize = 480;
+	public final static int X_SIZE = 854, Y_SIZE = 480;
 		
 	public void init() {
-		setSize(xSize,ySize);
-		offScreen = createImage(xSize,ySize);
+		setSize(X_SIZE,Y_SIZE);
+		offScreen = createImage(X_SIZE,Y_SIZE);
 		g2d = (Graphics2D)(offScreen.getGraphics());
 		player = new PlayerShip();
 		hud = new HeadsUpDisplay(player);
@@ -46,7 +46,6 @@ public class Game extends JApplet implements Runnable {
 	}
 	
 	public void paint(Graphics g) {
-		//g2d.clearRect(0,0,854,480);
 		super.paint(g);
 		for (Component c : getContentPane().getComponents()) {
 			c.paint(g);
@@ -60,8 +59,8 @@ public class Game extends JApplet implements Runnable {
 	class GameWorker extends SwingWorker<Object, Object> {
 		@Override
 		protected Object doInBackground() throws Exception {
-			getContentPane().add(hud,0);
-			getContentPane().add(player,1);
+			getContentPane().add(hud);
+			getContentPane().add(player);
 			getContentPane().revalidate();
 			getContentPane().requestFocus();
 			while(true) {

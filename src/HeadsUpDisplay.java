@@ -1,11 +1,10 @@
 /**
  * @author Matthew Schueler
- * @version 5.0
+ * @version 6.0
  */
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +22,7 @@ public class HeadsUpDisplay extends JComponent {
 	public HeadsUpDisplay(PlayerShip player) {
 		playerShip = player;
 		try {
-			life = ImageIO.read(new File("spaceshiptiny.jpeg"));
+			life = ImageIO.read(new File("spaceshiptiny.png"));
 		    lifeImgX = life.getWidth();
 		    lifeImgY = life.getHeight();
 		} catch (IOException e) {

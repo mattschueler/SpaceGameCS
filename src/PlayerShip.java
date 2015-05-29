@@ -1,14 +1,10 @@
 /**
  * @author Matthew Schueler
- * @version 5.0
+ * @version 6.0
  */
 
 import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,11 +15,7 @@ import javax.swing.*;
 public class PlayerShip extends GameComponent {
 
 	private static final long serialVersionUID = 1L;
-	BufferedImage img;
-	public int imgX, imgY;
-	private double xVel,yVel,rVel;
-	private int xPos,yPos;
-	private double rot;
+	private double rVel;
 	private double accel;
 	
 	private int lives;
@@ -39,7 +31,7 @@ public class PlayerShip extends GameComponent {
 		accel = 0.25;
 		lives = 3;
 		try {
-			img = ImageIO.read(new File("spaceshipsmall.jpeg"));
+			img = ImageIO.read(new File("spaceshipsmall.png"));
 		    imgX = img.getWidth();
 		    imgY = img.getHeight();
 		} catch (IOException e) {
@@ -111,20 +103,6 @@ public class PlayerShip extends GameComponent {
 			keyBinds.replace(key,false);
 		}
 	}
-			
-	public double[] getPosition() {
-		double[] shipCoordinates = {xPos,yPos};
-		return shipCoordinates;
-	}
-	
-	public double[] getVelocity() {
-		double[] shipSpeeds = {xVel,yVel};
-		return shipSpeeds;
-	}
-	
-	public double getRotation() {
-		return rot;
-	}
 	
 	public int getLives() {
 		return lives;
@@ -151,11 +129,11 @@ public class PlayerShip extends GameComponent {
 		//fire bullets
 		if (keyBinds.get("SPACE")) {
 			Component[] comps = getParent().getComponents();
-			boolean fired = false;
+			int fired = 0;
 			for(int i=0;i<comps.length;i++) {
-				if(comps[i] instanceof Bullet)fired=true;
+				if(comps[i] instanceof Bullet)fired++;
 			}
-			if(!fired)getParent().add(new Bullet(xPos+imgX/2, yPos+imgY/2, rot, xVel, yVel));
+			if(fired<3)getParent().add(new Bullet(xPos+imgX/2, yPos+imgY/2, rot, xVel, yVel));
 		}
 		//finally make adjustments to position and angle
 		xPos+=xVel;
@@ -171,25 +149,9 @@ public class PlayerShip extends GameComponent {
 		//Make sure that total velocity (looking at both components does not exceed max speed
 		if(Math.abs(xVel)>Math.abs(maxVX))xVel=Math.copySign(maxVX, xVel);
 		if(Math.abs(yVel)>Math.abs(maxVY))yVel=Math.copySign(maxVY, yVel);
-		isOffscreen(Game.xSize, Game.ySize);
+		isOffscreen(Game.X_SIZE, Game.Y_SIZE);
 	}
-	
-	public void isOffscreen(int screenX, int screenY) {
-		//check if off edge of any side of screen and move to wrap around to other side
-		if ((xPos+imgX/2)<=0)xPos+=screenX;
-		else if ((xPos-imgX/2)>=screenX)xPos=0;
-		if ((yPos+imgY/2)<=0)yPos+=screenY;
-		else if ((yPos-imgY/2)>=screenY)yPos=0;
-	}
-	
-	public void paint(Graphics g) {
-		Graphics2D g2d = (Graphics2D) g;
-		//rotate the image based on theta of ship, and translate to center position of image
-		AffineTransform at = AffineTransform.getRotateInstance(rot+(Math.PI/2), xPos+img.getWidth()/2, yPos+img.getHeight()/2);
-		at.translate(xPos,yPos);
-		g2d.drawImage(img, at, null);
-	}
-	
+			
 	public String toString() {
 		return String.format("PlayerShip X:%f Y:%f THETA:%f VX:%f VY:%f", xPos, yPos, rot, xVel, yVel);
 	}
