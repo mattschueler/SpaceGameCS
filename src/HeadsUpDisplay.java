@@ -13,7 +13,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
 public class HeadsUpDisplay extends JComponent {
-	
 	private static final long serialVersionUID = 1L;
 	private PlayerShip playerShip;
 	private BufferedImage life;
@@ -36,7 +35,16 @@ public class HeadsUpDisplay extends JComponent {
 		/*for (int i=0;i<playerShip.getLives();i++) {
 			g2d.drawImage(life, 10+20*i, 20, lifeImgX, lifeImgY, null);
 		}*/
-		g2d.drawString(""+playerShip.getLives(), 10, 20);
+		g2d.drawString("Lives: " + playerShip.getLives(), 10, 20);
+		g2d.drawString("Score: " + Game.getScore(), 10, 40);
+	}
+	
+	public void showEnd (int status, Graphics2D g2d) {
+		if (status==-1) {
+			g2d.drawString("RATS!!! YOU LOST!!", 100, 100);
+		} else if (status==-2) {
+			g2d.drawString("CONGRATS!!! YOU WIN!!!", 100, 100);
+		}
 	}
 	
 }

@@ -13,7 +13,6 @@ import javax.swing.JApplet;
 import javax.swing.SwingWorker;
 
 public class Game extends JApplet implements Runnable {
-
 	private static final long serialVersionUID = 1L;
 	BufferedImage img = null;
 	public Image offScreen;
@@ -21,9 +20,13 @@ public class Game extends JApplet implements Runnable {
 	public PlayerShip player;
 	public HeadsUpDisplay hud;
 	private Thread th;
+	private int gameTicks = 0;
+	private static int gameScore = 0;
+	public Integer status = 1;
 	
-	public final static int TICK_TIME = 20;
+	public final static int TICK_TIME = 20; //time in msecs of one frame
 	public final static int X_SIZE = 854, Y_SIZE = 480;
+	public final static int SPAWN_GAP = 10; //seconds between increasing the max num of asteroids
 		
 	public void init() {
 		setSize(X_SIZE,Y_SIZE);
@@ -37,7 +40,7 @@ public class Game extends JApplet implements Runnable {
 	
 	@Override
 	public void run() {
-		(new GameWorker()).execute();
+		(new GameWorker(status)).execute();
 		
 	}
 	
@@ -57,17 +60,24 @@ public class Game extends JApplet implements Runnable {
 	}
 	
 	class GameWorker extends SwingWorker<Object, Object> {
+		public Integer gameStatus;
+		public GameWorker(Integer status) {
+			gameStatus = status;
+		}
+		
 		@Override
 		protected Object doInBackground() throws Exception {
 			getContentPane().add(hud);
 			getContentPane().add(player);
 			getContentPane().revalidate();
 			getContentPane().requestFocus();
-			while(true) {
+			while(/*gameStatus>0*/true) {
 				for (Component c : getContentPane().getComponents()) {
 					if (c instanceof GameComponent)
 						((GameComponent)c).moveTick();
 				}
+				Asteroid a = addAsteroid();
+				if(a!=null) getContentPane().add(a);
 				repaint();				
 				revalidate();
 				try {
@@ -75,7 +85,49 @@ public class Game extends JApplet implements Runnable {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				//keep track of number of frames the game has been played for
+				gameTicks++;
+				if(gameTicks%(1000/TICK_TIME)==0)Game.addScore(5);
+				if(player.getLives()<=0) {
+					System.out.println("1");
+					hud.showEnd(-1, g2d);
+					stop();
+				}
+				else if(Game.getScore()>=500) {
+					System.out.println("2");
+					hud.showEnd(-2, g2d);
+					stop();
+				}
 			}
-		}		
-	}	
+			//return gameStatus;			
+		}
+		
+		protected void done() {
+			Graphics2D g2d = (Graphics2D)(getContentPane().getGraphics());
+			
+			stop();
+		}
+	}
+	
+	public static int getScore() {
+		return gameScore;
+	}
+	
+	public static void addScore(int points) {
+		gameScore += points;
+	}
+	
+	private Asteroid addAsteroid() {
+		Component[] comps = getContentPane().getComponents();
+		int asteroids = 0;
+		for(int i=0;i<comps.length;i++) {
+			if(comps[i] instanceof Asteroid)asteroids++;
+		}
+		int maxAsteroids = 3+(gameTicks*TICK_TIME)/(SPAWN_GAP*1000);
+		//System.out.println(maxAsteroids);
+		if (asteroids<maxAsteroids) return new Asteroid();
+		//this means that the max starts at 3, and increases by 1 every SPAWN_GAP seconds
+		return null;
+	}
+	
 }

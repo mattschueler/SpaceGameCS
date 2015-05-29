@@ -10,12 +10,6 @@ import javax.imageio.ImageIO;
 
 public class Bullet extends GameComponent {
 	private static final long serialVersionUID = 1L;
-	/*BufferedImage img;
-	public int imgX, imgY;
-	private double xVel,yVel;
-	private int xPos,yPos;
-	private double rot;*/
-	
 	private int lifeTime;
 		
 	public Bullet(int px, int py, double th, double vx, double vy) {
@@ -38,8 +32,7 @@ public class Bullet extends GameComponent {
 	public void moveTick() {
 		lifeTime-=Game.TICK_TIME;
 		if (lifeTime<=0) {
-			getParent().remove(this);
-			
+			getParent().remove(this);			
 		}
 		xPos+=xVel;
 		yPos+=yVel;

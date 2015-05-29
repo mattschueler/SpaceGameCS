@@ -13,11 +13,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class PlayerShip extends GameComponent {
-
 	private static final long serialVersionUID = 1L;
-	private double rVel;
 	private double accel;
-	
 	private int lives;
 	
 	public ConcurrentHashMap<String,Boolean> keyBinds;
@@ -133,7 +130,7 @@ public class PlayerShip extends GameComponent {
 			for(int i=0;i<comps.length;i++) {
 				if(comps[i] instanceof Bullet)fired++;
 			}
-			if(fired<3)getParent().add(new Bullet(xPos+imgX/2, yPos+imgY/2, rot, xVel, yVel));
+			if(fired<1)getParent().add(new Bullet(xPos+imgX/2, yPos+imgY/2, rot, xVel, yVel));
 		}
 		//finally make adjustments to position and angle
 		xPos+=xVel;

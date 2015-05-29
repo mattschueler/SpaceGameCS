@@ -11,11 +11,10 @@ import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 
 public class GameComponent extends JComponent {
-
 	private static final long serialVersionUID = 1L;
 	BufferedImage img;
 	public int imgX, imgY;
-	protected double xVel,yVel;
+	protected double xVel,yVel, rVel;
 	protected int xPos, yPos;
 	protected double rot;
 	
@@ -39,17 +38,19 @@ public class GameComponent extends JComponent {
 	}
 
 	public double[] getPosition() {
-		double[] shipCoordinates = {xPos,yPos};
-		return shipCoordinates;
+		return new double[]{xPos+imgX,yPos+imgY};
 	}
 	
 	public double[] getVelocity() {
-		double[] shipSpeeds = {xVel,yVel};
-		return shipSpeeds;
+		return new double[]{xVel,yVel};
 	}
 	
 	public double getRotation() {
 		return rot;
+	}
+	
+	public double distanceTo(double[] aCoords, double[] bCoords) {
+		return Math.sqrt(Math.pow(aCoords[0]-bCoords[0], 2)+Math.pow(aCoords[1]-bCoords[1], 2));
 	}
 	
 }
