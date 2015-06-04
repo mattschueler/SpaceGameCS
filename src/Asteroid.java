@@ -38,7 +38,7 @@ public class Asteroid extends GameComponent {
 	}
 	
 	/**
-	 * moveTick method for this GameComponent, moves the asteroid across the screen based on its
+	 * moveTick method for this GameComponent, moves the asteroid across the screen based on its 
 	 * velocities and also checks for Bullet collisions and offScreen coordinates
 	 */
 	public void moveTick() {
@@ -50,9 +50,9 @@ public class Asteroid extends GameComponent {
 	}
 	
 	/**
-	 * Checks if there are any Bullets less than 25 pixels away from the Asteroid, if there is,
-	 * that means that there has been a "collision: between the two objects, and this method adjusts
-	 * the "dead" boolean variables of the Bullet that is close to it and the Asteroid itself	
+	 * Checks if there are any Bullets less than 25 pixels away from the Asteroid, if there is, 
+	 * that means that there has been a "collision: between the two objects, and this method adjusts 
+	 * the "dead" boolean variables of the Bullet that is close to it and the Asteroid itself
 	 */
 	public void checkBulletCollisions() {
 		Component[] comps = getParent().getComponents();

@@ -14,19 +14,19 @@ public class GameComponent extends JComponent {
 	private static final long serialVersionUID = 1L;
 	BufferedImage img;
 	public int imgX, imgY;
-	protected double xVel,yVel, rVel;
+	protected double xVel, yVel, rVel;
 	protected int xPos, yPos;
 	protected double rot;
 	protected boolean dead;
 	
 	/**
-	 * Allows for each child to define its own movement method, this method is empty and
+	 * Allows for each child to define its own movement method, this method is empty and 
 	 * does nothing
 	 */
 	public void moveTick() {}
 	
 	/**
-	 * Checks to see if the component is currently off the side of the screen and
+	 * Checks to see if the component is currently off the side of the screen and 
 	 * adjusts the coordinates as necessary to wrap the image around
 	 * @param screenX the width of the window
 	 * @param screenY the height of the window
@@ -52,8 +52,8 @@ public class GameComponent extends JComponent {
 	 * Gives the x and y coordinates of the object
 	 * @return the position of the center of the image of the object as a "vector"
 	 */
-	public double[] getPosition() {
-		return new double[]{xPos+imgX/2,yPos+imgY/2};
+	public int[] getPosition() {
+		return new int[]{xPos+imgX/2,yPos+imgY/2};
 	}
 	
 	/**
@@ -86,7 +86,7 @@ public class GameComponent extends JComponent {
 	 * @param bCoords the coordinates of the second object
 	 * @return the distance between the two objects
 	 */
-	public double distanceTo(double[] aCoords, double[] bCoords) {
+	public double distanceTo(int[] aCoords, int[] bCoords) {
 		return Math.sqrt(Math.pow(aCoords[0]-bCoords[0], 2)+Math.pow(aCoords[1]-bCoords[1], 2));
 	}
 	

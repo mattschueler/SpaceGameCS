@@ -11,14 +11,20 @@ import javax.imageio.ImageIO;
 public class Bullet extends GameComponent {
 	private static final long serialVersionUID = 1L;
 	private int lifeTime;
-		
-	public Bullet(int px, int py, double th, double vx, double vy) {
+	
+	/**
+	 * Creates a new Bullet with an image from a file with a given position, velocity, and rotation
+	 * @param pos the position vector of the PlayerShip that fired the bullet
+	 * @param vel the velocity vector of the PlayerShip that fired the bullet
+	 * @param th the rotation of the PlayerShip that fired the bullet
+	 */
+	public Bullet(int pos[], double vel[], double th) {
 		dead = false;
-		xPos = px;
-		yPos = py;
+		xPos = pos[0];
+		yPos = pos[1];
 		rot = th;
-		xVel = vx + 20 * Math.cos(rot);
-		yVel = vy + 20 * Math.sin(rot);
+		xVel = vel[0] + 20 * Math.cos(rot);
+		yVel = vel[1] + 20 * Math.sin(rot);
 		lifeTime = 500; //in msecs
 		try {
 			img = ImageIO.read(new File("bullet.png"));
@@ -30,6 +36,10 @@ public class Bullet extends GameComponent {
 		}
 	}
 	
+	/**
+	 * moveTick method of the Bullet class, decreases lifeTime left by a Game.TICK_TIME, checks if the Bullet is 
+	 * "dead", changes the position and checks if the Bullet has gone offscreen
+	 */
 	public void moveTick() {
 		lifeTime-=Game.TICK_TIME;
 		if (lifeTime<=0) {

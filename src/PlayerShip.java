@@ -22,6 +22,11 @@ public class PlayerShip extends GameComponent {
 	final double MAX_VEL = 10;
 	final double MIN_VEL = 0.2;
 	
+	/**
+	 * Creates a new PlayerShip with a starting Position and sets the acceleration value of the ship.
+	 * Also initializes the lives and gets the image for the ship. Creates the key bindings for playe input
+	 * with ActionMap and InputMap for the directions and the fire button.
+	 */
 	public PlayerShip() {
 		dead = false;
 		xPos = 300;
@@ -56,6 +61,11 @@ public class PlayerShip extends GameComponent {
 		}
 	}
 	
+	/**
+	 * PressAction class to handle a key press event and modify the keys ArrayList
+	 * @author Matthew Schueler
+	 *
+	 */
 	class PressAction extends AbstractAction {
 		//general key press action class
 		private static final long serialVersionUID = 1L;
@@ -69,6 +79,11 @@ public class PlayerShip extends GameComponent {
 		}
 	}
 	
+	/**
+	 * ReleaseAction class to handle a key release event and modify the keys ArrayList
+	 * @author Matthew Schueler
+	 *
+	 */
 	class ReleaseAction extends AbstractAction {
 		//general key release action class
 		private static final long serialVersionUID = 1L;
@@ -82,56 +97,69 @@ public class PlayerShip extends GameComponent {
 		}
 	}
 	
+	/**
+	 * Gets the number of lives that the player has left
+	 * @return the current lives left of the PlayerShip
+	 */
 	public int getLives() {
 		return lives;
 	}
-				
+	
+	/**
+	 * moveTick method for the PlayerShip. First checks for thrust/braking key binings and adjusts velocity components 
+	 * accordingly. Then checks for rotation key bindings and adjusts rotational velocity accordingly. The checks to 
+	 * see if the ship should fire and makes sure that there are no Bullets left to ensure only one is fired at a time. 
+	 * Then modifies the position and rotation of the ship. Then, makes sure that if the ship's velocity is below a 
+	 * threshold it is set to zero, otherwise the ship would jitter around as it's velocity would never become zero. 
+	 * Then using the sin/cos of the angle of the velocity vector, makes sure that each component of the velocity 
+	 * is no more than MAX_VEL times the sin/cos of the angle of the velocity vector so that the net Velocity is never 
+	 * greater than MAX_VEL. Finally, it checks if the PlayerShip is offscreen, has collided with Asteroids, and has 
+	 * run out of lives.
+	 */
 	public void moveTick() {
-		//make any adjustments to velocity vectors
-		//thrusting/braking
+		//Thrust/braking
 		if(keyBinds.get("W")) {
-			//thrust
 			xVel+=accel*Math.cos(rot);
 			yVel+=accel*Math.sin(rot);
 		} else if (keyBinds.get("S")) {
-			//brake
 			if(xVel!=0)xVel-=Math.copySign(1.25*accel, xVel)*Math.cos(Math.atan(Math.abs(yVel/xVel)));
 			if(yVel!=0)yVel-=Math.copySign(1.25*accel, yVel)*Math.sin(Math.atan(Math.abs(yVel/xVel)));
-		} else {
-			//for any cases where not thrusting/braking at all
-		}
-		//turning
-		if (keyBinds.get("A")) rVel=-0.1; //rotate left
-		else if (keyBinds.get("D")) rVel=0.1; //rotate right
-		else rVel=0; //no rotation
-		//fire bullets
+		} else {}
+		//Turning
+		if (keyBinds.get("A")) rVel=-0.1; //left
+		else if (keyBinds.get("D")) rVel=0.1; //right
+		else rVel=0;
+		//Firing
 		if (keyBinds.get("SPACE")) {
 			Component[] comps = getParent().getComponents();
 			int fired = 0;
 			for(int i=0;i<comps.length;i++) {
 				if(comps[i] instanceof Bullet)fired++;
 			}
-			if(fired<1)getParent().add(new Bullet(xPos+imgX/2, yPos+imgY/2, rot, xVel, yVel));
+			if(fired<1)getParent().add(new Bullet(getPosition(), getVelocity(), rot));
 		}
-		//finally make adjustments to position and angle
+		//Position/rotation modify
 		xPos+=xVel;
 		yPos+=yVel;
 		rot+=rVel;
-		//If not trying to accelerate and speed less than minimum, set to 0
+		//Below a threshold, velocity is zero
 		if(Math.abs(xVel)<=MIN_VEL && !keyBinds.get("W"))xVel=0;
 		if(Math.abs(yVel)<=MIN_VEL && !keyBinds.get("W"))yVel=0;
-		//find what max speed is for each direction based off angle of velocity
+		//Make sure not going too fast
 		double vTheta = Math.atan(yVel/xVel);
 		double maxVX = -1 * MAX_VEL * Math.cos(vTheta);
 		double maxVY = -1 * MAX_VEL * Math.sin(vTheta);
-		//Make sure that total velocity (looking at both components does not exceed max speed
 		if(Math.abs(xVel)>Math.abs(maxVX))xVel=Math.copySign(maxVX, xVel);
 		if(Math.abs(yVel)>Math.abs(maxVY))yVel=Math.copySign(maxVY, yVel);
+		
 		isOffscreen(Game.X_SIZE, Game.Y_SIZE);
 		checkAsteroidCollisions();
 		if(getLives()<=0)dead=true;
 	}
 	
+	/**
+	 * Checks if the PlayerShip has come too close to any Asteroids and decrements the lives if this is true
+	 */
 	public void checkAsteroidCollisions() {
 		Component[] comps = getParent().getComponents();
 		for(int i=0;i<comps.length;i++) {
@@ -145,6 +173,10 @@ public class PlayerShip extends GameComponent {
 		}
 	}
 			
+	/**
+	 * Returns info about the PlayerShip for debugging
+	 * @return the object data as a string
+	 */
 	public String toString() {
 		return String.format("PlayerShip X:%f Y:%f THETA:%f VX:%f VY:%f", xPos, yPos, rot, xVel, yVel);
 	}
