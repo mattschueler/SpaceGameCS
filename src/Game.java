@@ -44,6 +44,8 @@ public class Game extends JApplet implements Runnable {
 	}
 	
 	public void stop() {
+		player = null;
+		hud = null;
 		th = null;
 	}
 	
@@ -67,8 +69,11 @@ public class Game extends JApplet implements Runnable {
 			getContentPane().requestFocus();
 			while(true) {
 				for (Component c : getContentPane().getComponents()) {
-					if (c instanceof GameComponent)
+					if (c instanceof GameComponent) {
 						((GameComponent)c).moveTick();
+						if (((GameComponent)c).dead) getContentPane().remove(c);
+					}
+										
 				}
 				Asteroid a = addAsteroid();
 				if(a!=null) getContentPane().add(a);

@@ -23,6 +23,7 @@ public class PlayerShip extends GameComponent {
 	final double MIN_VEL = 0.2;
 	
 	public PlayerShip() {
+		dead = false;
 		xPos = 300;
 		yPos = 300;
 		accel = 0.25;
@@ -52,11 +53,6 @@ public class PlayerShip extends GameComponent {
 			acMap.put("press " + s, new PressAction(s));
 			inMap.put(KeyStroke.getKeyStroke("released " + s), "release " + s);
 			acMap.put("release " + s, new ReleaseAction(s));
-			//if (s.equals("SPACE")) {
-				System.out.println(s);
-				inMap.put(KeyStroke.getKeyStroke("typed " + s), "type " + s);
-				acMap.put("typed " + s, new TypeAction(s));
-			//}
 		}
 	}
 	
@@ -70,21 +66,6 @@ public class PlayerShip extends GameComponent {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			keyBinds.replace(key,true);
-		}
-	}
-	
-	class TypeAction extends AbstractAction {
-		//used for the fire button
-		private static final long serialVersionUID = 1L;
-		private String key;
-		public TypeAction(String newKey) {
-			System.out.println("init");
-			key=newKey;
-		}
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			System.out.println(e);
-			keyBinds.replace(key,false);
 		}
 	}
 	

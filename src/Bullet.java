@@ -13,6 +13,7 @@ public class Bullet extends GameComponent {
 	private int lifeTime;
 		
 	public Bullet(int px, int py, double th, double vx, double vy) {
+		dead = false;
 		xPos = px;
 		yPos = py;
 		rot = th;
@@ -32,26 +33,11 @@ public class Bullet extends GameComponent {
 	public void moveTick() {
 		lifeTime-=Game.TICK_TIME;
 		if (lifeTime<=0) {
-			getParent().remove(this);
+			dead = true;
 		}
 		xPos+=xVel;
 		yPos+=yVel;
 		isOffscreen(Game.X_SIZE,Game.Y_SIZE);
 	}
-	
-	/*public void isOffscreen(int screenX, int screenY) {
-		//check if off edge of any side of screen and move to wrap around to other side
-		if ((xPos+5)<=0)xPos+=screenX;
-		else if ((xPos-5)>=screenX)xPos=0;
-		if ((yPos+5)<=0)yPos+=screenY;
-		else if ((yPos-5)>=screenY)yPos=0;
-	}
-	
-	public void paint(Graphics g) {
-		Graphics2D g2d = (Graphics2D) g;
-		setBackground(Color.YELLOW);
-		setOpaque(true);
-		g2d.fillOval(xPos-RADIUS, yPos-RADIUS, 2*RADIUS, 2*RADIUS);
-	}*/
-	
+		
 }
