@@ -22,7 +22,6 @@ public class Game extends JApplet implements Runnable {
 	private Thread th;
 	private int gameTicks = 0;
 	private static int gameScore = 0;
-	public Integer status = 1;
 	
 	public final static int TICK_TIME = 20; //time in msecs of one frame
 	public final static int X_SIZE = 854, Y_SIZE = 480;
