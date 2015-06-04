@@ -128,6 +128,21 @@ public class PlayerShip extends GameComponent {
 		if(Math.abs(xVel)>Math.abs(maxVX))xVel=Math.copySign(maxVX, xVel);
 		if(Math.abs(yVel)>Math.abs(maxVY))yVel=Math.copySign(maxVY, yVel);
 		isOffscreen(Game.X_SIZE, Game.Y_SIZE);
+		checkAsteroidCollisions();
+		if(getLives()<=0)dead=true;
+	}
+	
+	public void checkAsteroidCollisions() {
+		Component[] comps = getParent().getComponents();
+		for(int i=0;i<comps.length;i++) {
+			if(comps[i] instanceof Asteroid) {
+				if(distanceTo(this.getPosition(),((Asteroid)comps[i]).getPosition())<25){
+					lives--;
+					((Asteroid)comps[i]).dead = true;
+					return;
+				}
+			}
+		}
 	}
 			
 	public String toString() {

@@ -16,7 +16,7 @@ public class Asteroid extends GameComponent {
 	 * Generates a new asteroid with an image from a file and a random position, location, 
 	 * and rotational velocity
 	 */
-	public Asteroid() {
+	public Asteroid(PlayerShip player) {
 		try {
 			img = ImageIO.read(new File("asteroid.png"));
 		    imgX = img.getWidth();
@@ -26,8 +26,12 @@ public class Asteroid extends GameComponent {
 			return;
 		}
 		dead = false;
-		xPos = (int)((Game.X_SIZE-200)*Math.random())+100;
-		yPos = (int)((Game.Y_SIZE-200)*Math.random())+100;
+		xPos = (int)((Game.X_SIZE-100)*Math.random())+50;
+		yPos = (int)((Game.Y_SIZE-100)*Math.random())+50;
+		while(distanceTo(player.getPosition(), this.getPosition())<25) {
+			xPos = (int)((Game.X_SIZE-100)*Math.random())+50;
+			yPos = (int)((Game.Y_SIZE-100)*Math.random())+50;
+		}
 		xVel = (4*Math.random())-2;
 		yVel = (4*Math.random())-2;
 		rVel = (0.01 * Math.random())+0.01;

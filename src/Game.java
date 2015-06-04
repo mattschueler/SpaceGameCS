@@ -4,6 +4,7 @@
  */
 
 import java.awt.Component;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -18,7 +19,6 @@ public class Game extends JApplet implements Runnable {
 	public Image offScreen;
 	public Graphics2D g2d;
 	public PlayerShip player;
-	public HeadsUpDisplay hud;
 	private Thread th;
 	private int gameTicks = 0;
 	private static int gameScore = 0;
@@ -32,20 +32,17 @@ public class Game extends JApplet implements Runnable {
 		offScreen = createImage(X_SIZE,Y_SIZE);
 		g2d = (Graphics2D)(offScreen.getGraphics());
 		player = new PlayerShip();
-		hud = new HeadsUpDisplay(player);
 		th = new Thread(this);
 		th.start();
 	}
 	
 	@Override
 	public void run() {
-		(new GameWorker()).execute();
-		
+		(new GameWorker(this)).execute();
 	}
 	
 	public void stop() {
 		player = null;
-		hud = null;
 		th = null;
 	}
 	
@@ -60,10 +57,18 @@ public class Game extends JApplet implements Runnable {
 		paint(g);
 	}
 	
+	public void setHeading(int score, int lives) {
+		Frame c = (Frame)this.getParent().getParent();
+		c.setTitle(String.format("Lives: %d     Score: %d", lives, score));
+	}
+	
 	class GameWorker extends SwingWorker<Object, Object> {
+		Game currentGame;
+		public GameWorker(Game game) {
+			currentGame = game;
+		}
 		@Override
 		protected Object doInBackground() throws Exception {
-			getContentPane().add(hud);
 			getContentPane().add(player);
 			getContentPane().revalidate();
 			getContentPane().requestFocus();
@@ -87,6 +92,7 @@ public class Game extends JApplet implements Runnable {
 				//keep track of number of frames the game has been played for
 				gameTicks++;
 				if(gameTicks%(1000/TICK_TIME)==0)Game.addScore(5);
+				currentGame.setHeading(gameScore, player.getLives());
 				if(player.getLives()<=0) {
 					stop();
 				}
@@ -112,7 +118,7 @@ public class Game extends JApplet implements Runnable {
 			if(comps[i] instanceof Asteroid)asteroids++;
 		}
 		int maxAsteroids = 3+(gameTicks*TICK_TIME)/(SPAWN_GAP*1000);
-		if (asteroids<maxAsteroids) return new Asteroid();
+		if (asteroids<maxAsteroids) return new Asteroid(player);
 		//this means that the max starts at 3, and increases by 1 every SPAWN_GAP seconds
 		return null;
 	}
