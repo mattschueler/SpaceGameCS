@@ -38,13 +38,5 @@ public class HeadsUpDisplay extends JComponent {
 		g2d.drawString("Lives: " + playerShip.getLives(), 10, 20);
 		g2d.drawString("Score: " + Game.getScore(), 10, 40);
 	}
-	
-	public void showEnd (int status, Graphics2D g2d) {
-		if (status==-1) {
-			g2d.drawString("RATS!!! YOU LOST!!", 100, 100);
-		} else if (status==-2) {
-			g2d.drawString("CONGRATS!!! YOU WIN!!!", 100, 100);
-		}
-	}
-	
+		
 }

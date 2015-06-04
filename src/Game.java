@@ -40,7 +40,7 @@ public class Game extends JApplet implements Runnable {
 	
 	@Override
 	public void run() {
-		(new GameWorker(status)).execute();
+		(new GameWorker()).execute();
 		
 	}
 	
@@ -60,18 +60,13 @@ public class Game extends JApplet implements Runnable {
 	}
 	
 	class GameWorker extends SwingWorker<Object, Object> {
-		public Integer gameStatus;
-		public GameWorker(Integer status) {
-			gameStatus = status;
-		}
-		
 		@Override
 		protected Object doInBackground() throws Exception {
 			getContentPane().add(hud);
 			getContentPane().add(player);
 			getContentPane().revalidate();
 			getContentPane().requestFocus();
-			while(/*gameStatus>0*/true) {
+			while(true) {
 				for (Component c : getContentPane().getComponents()) {
 					if (c instanceof GameComponent)
 						((GameComponent)c).moveTick();
@@ -89,23 +84,12 @@ public class Game extends JApplet implements Runnable {
 				gameTicks++;
 				if(gameTicks%(1000/TICK_TIME)==0)Game.addScore(5);
 				if(player.getLives()<=0) {
-					System.out.println("1");
-					hud.showEnd(-1, g2d);
 					stop();
 				}
-				else if(Game.getScore()>=500) {
-					System.out.println("2");
-					hud.showEnd(-2, g2d);
+				else if(Game.getScore()>=5000) {
 					stop();
 				}
-			}
-			//return gameStatus;			
-		}
-		
-		protected void done() {
-			Graphics2D g2d = (Graphics2D)(getContentPane().getGraphics());
-			
-			stop();
+			}		
 		}
 	}
 	
@@ -124,7 +108,6 @@ public class Game extends JApplet implements Runnable {
 			if(comps[i] instanceof Asteroid)asteroids++;
 		}
 		int maxAsteroids = 3+(gameTicks*TICK_TIME)/(SPAWN_GAP*1000);
-		//System.out.println(maxAsteroids);
 		if (asteroids<maxAsteroids) return new Asteroid();
 		//this means that the max starts at 3, and increases by 1 every SPAWN_GAP seconds
 		return null;

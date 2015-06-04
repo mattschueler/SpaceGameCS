@@ -32,7 +32,7 @@ public class Bullet extends GameComponent {
 	public void moveTick() {
 		lifeTime-=Game.TICK_TIME;
 		if (lifeTime<=0) {
-			getParent().remove(this);			
+			getParent().remove(this);
 		}
 		xPos+=xVel;
 		yPos+=yVel;
