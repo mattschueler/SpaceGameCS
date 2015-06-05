@@ -15,7 +15,7 @@ public class GameComponent extends JComponent {
 	BufferedImage img;
 	public int imgX, imgY;
 	protected double xVel, yVel, rVel;
-	protected int xPos, yPos;
+	protected double xPos, yPos;
 	protected double rot;
 	protected boolean dead;
 	
@@ -52,8 +52,8 @@ public class GameComponent extends JComponent {
 	 * Gives the x and y coordinates of the object
 	 * @return the position of the center of the image of the object as a "vector"
 	 */
-	public int[] getPosition() {
-		return new int[]{xPos+imgX/2,yPos+imgY/2};
+	public double[] getPosition() {
+		return new double[]{xPos+imgX/2,yPos+imgY/2};
 	}
 	
 	/**
@@ -86,7 +86,7 @@ public class GameComponent extends JComponent {
 	 * @param bCoords the coordinates of the second object
 	 * @return the distance between the two objects
 	 */
-	public double distanceTo(int[] aCoords, int[] bCoords) {
+	public double distanceTo(double[] aCoords, double[] bCoords) {
 		return Math.sqrt(Math.pow(aCoords[0]-bCoords[0], 2)+Math.pow(aCoords[1]-bCoords[1], 2));
 	}
 	

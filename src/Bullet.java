@@ -18,16 +18,16 @@ public class Bullet extends GameComponent {
 	 * @param vel the velocity vector of the PlayerShip that fired the bullet
 	 * @param th the rotation of the PlayerShip that fired the bullet
 	 */
-	public Bullet(int pos[], double vel[], double th) {
+	public Bullet(double pos[], double vel[], double th) {
 		dead = false;
 		xPos = pos[0];
 		yPos = pos[1];
 		rot = th;
-		xVel = vel[0] + 20 * Math.cos(rot);
-		yVel = vel[1] + 20 * Math.sin(rot);
-		lifeTime = 500; //in msecs
+		xVel = vel[0] + 10 * Math.cos(rot);
+		yVel = vel[1] + 10 * Math.sin(rot);
+		lifeTime = 1000; //in msecs
 		try {
-			img = ImageIO.read(new File("bullet.png"));
+			img = ImageIO.read(new File("src/bullet.png"));
 	    	imgX = img.getWidth();
 	    	imgY = img.getHeight();
 		} catch (IOException e) {

@@ -11,6 +11,9 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JApplet;
+import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
 public class Game extends JApplet implements Runnable {
@@ -23,7 +26,7 @@ public class Game extends JApplet implements Runnable {
 	private int gameTicks = 0;
 	private static int gameScore = 0;
 	
-	public final static int TICK_TIME = 20; //time in msecs of one frame
+	public final static int TICK_TIME = 25; //time in msecs of one frame
 	public final static int X_SIZE = 854, Y_SIZE = 480;
 	public final static int SPAWN_GAP = 10; //seconds between increasing the max num of asteroids
 		
@@ -41,14 +44,13 @@ public class Game extends JApplet implements Runnable {
 	 * events on th Evet Dispatch Thread
 	 */
 	public void run() {
-		(new GameWorker(this)).execute();
+		(new GameWorker(this)).run();
 	}
 	
 	/**
 	 * Stops the current thread execution
 	 */
 	public void stop() {
-		player = null;
 		th = null;
 	}
 	
@@ -73,7 +75,7 @@ public class Game extends JApplet implements Runnable {
 	 * Sets the heading of the JApplet window to show the score and lives for the current game
 	 */
 	public void setHeading(int score, int lives) {
-		Frame c = (Frame)this.getParent().getParent();
+		JFrame c = (JFrame)this.getParent().getParent().getParent().getParent();
 		c.setTitle(String.format("Lives: %d     Score: %d", lives, score));
 	}
 	
@@ -81,13 +83,14 @@ public class Game extends JApplet implements Runnable {
 	 * GameWorker is a subclass of SwingWorker that exists to run the game instance on the EDT
 	 * @author Matthew Schueler	 *
 	 */
-	class GameWorker extends SwingWorker<Object, Object> {
+	//class GameWorker extends SwingWorker<Object, Object> {
+	class GameWorker extends Thread {
 		Game currentGame;
 		public GameWorker(Game game) {
 			currentGame = game;
 		}
-		@Override
-		protected Object doInBackground() throws Exception {
+		
+		public void run() {
 			getContentPane().add(player);
 			getContentPane().revalidate();
 			getContentPane().requestFocus();
@@ -99,6 +102,7 @@ public class Game extends JApplet implements Runnable {
 					}
 										
 				}
+			
 				Asteroid a = addAsteroid();
 				if(a!=null) getContentPane().add(a);
 				repaint();				
@@ -110,13 +114,11 @@ public class Game extends JApplet implements Runnable {
 				}
 				//keep track of number of frames the game has been played for
 				gameTicks++;
-				if(gameTicks%(1000/TICK_TIME)==0)Game.addScore(5);
+				if(gameTicks%(2000/TICK_TIME)==0)Game.addScore(5);
 				currentGame.setHeading(gameScore, player.getLives());
-				if(player.dead) {
-					stop();
-				}
-				else if(Game.getScore()>=5000) {
-					stop();
+				if(player.dead || Game.getScore()>=5000) {
+					currentGame.stop();
+					return;
 				}
 			}		
 		}
@@ -150,7 +152,7 @@ public class Game extends JApplet implements Runnable {
 		for(int i=0;i<comps.length;i++) {
 			if(comps[i] instanceof Asteroid)asteroids++;
 		}
-		int maxAsteroids = 3+(gameTicks*TICK_TIME)/(SPAWN_GAP*1000);
+		int maxAsteroids = 3+(gameTicks*TICK_TIME)/(SPAWN_GAP*2000);
 		if (asteroids<maxAsteroids) return new Asteroid(player);
 		return null;
 	}

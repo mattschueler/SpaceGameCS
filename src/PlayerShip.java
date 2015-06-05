@@ -19,8 +19,8 @@ public class PlayerShip extends GameComponent {
 	
 	public ConcurrentHashMap<String,Boolean> keyBinds;
 	
-	final double MAX_VEL = 10;
-	final double MIN_VEL = 0.2;
+	final double MAX_VEL = 5;
+	final double MIN_VEL = 0.1;
 	
 	/**
 	 * Creates a new PlayerShip with a starting Position and sets the acceleration value of the ship.
@@ -31,10 +31,10 @@ public class PlayerShip extends GameComponent {
 		dead = false;
 		xPos = 300;
 		yPos = 300;
-		accel = 0.25;
+		accel = 0.125;
 		lives = 3;
 		try {
-			img = ImageIO.read(new File("spaceshipsmall.png"));
+			img = ImageIO.read(new File("src/spaceshipsmall.png"));
 		    imgX = img.getWidth();
 		    imgY = img.getHeight();
 		} catch (IOException e) {

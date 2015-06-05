@@ -18,7 +18,7 @@ public class Asteroid extends GameComponent {
 	 */
 	public Asteroid(PlayerShip player) {
 		try {
-			img = ImageIO.read(new File("asteroid.png"));
+			img = ImageIO.read(new File("src/asteroid.png"));
 		    imgX = img.getWidth();
 		    imgY = img.getHeight();
 		} catch (IOException e) {
@@ -28,12 +28,12 @@ public class Asteroid extends GameComponent {
 		dead = false;
 		xPos = (int)((Game.X_SIZE-100)*Math.random())+50;
 		yPos = (int)((Game.Y_SIZE-100)*Math.random())+50;
-		while(distanceTo(player.getPosition(), this.getPosition())<25) {
+		while(distanceTo(player.getPosition(), this.getPosition())<60) {
 			xPos = (int)((Game.X_SIZE-100)*Math.random())+50;
 			yPos = (int)((Game.Y_SIZE-100)*Math.random())+50;
 		}
-		xVel = (4*Math.random())-2;
-		yVel = (4*Math.random())-2;
+		xVel = (2*Math.random())-1;
+		yVel = (2*Math.random())-1;
 		rVel = (0.01 * Math.random())+0.01;
 	}
 	
